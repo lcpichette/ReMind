@@ -2,9 +2,10 @@
   "name": "remind",
   "version": "0.0.1",
   "scripts": {
-    "start": "npm run start:server",
+    "start": "nohup npm run start:server",
     "start:server": "cd api;go install;./templ-main/cmd/templ/templ generate;go run *.go",
-    "start:local": "open ./web/index.html;cd api;go install;./templ-main/cmd/templ/templ generate;go run *.go"
+    "start:local": "open ./web/index.html;cd api;go install;./templ-main/cmd/templ/templ generate;go run *.go",
+    "launch:server": ""
   },
   "author": "Lucas Pichette",
   "license": "ISC"

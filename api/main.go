@@ -17,6 +17,7 @@ type Router struct {
 	routes map[urlPattern]routeRules
 }
 
+// ServeHTTP Response controller
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Add("Access-Control-Allow-Origin", "*")
@@ -33,6 +34,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	handler.ServeHTTP(w, req)
 }
 
+// HandleFunc Establishes association between any route and handler
 func (r *Router) HandleFunc(method httpMethod, pattern urlPattern, f func(w http.ResponseWriter, req *http.Request)) {
 	rules, exists := r.routes[pattern]
 	if !exists {
@@ -42,6 +44,7 @@ func (r *Router) HandleFunc(method httpMethod, pattern urlPattern, f func(w http
 	rules.methods[method] = http.HandlerFunc(f)
 }
 
+// notAllowed Handles all unknown routes
 func notAllowed(w http.ResponseWriter, r routeRules) {
 	methods := make([]string, 1)
 	for k := range r.methods {
@@ -51,11 +54,13 @@ func notAllowed(w http.ResponseWriter, r routeRules) {
 	http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 }
 
+// New Dynamically maps the routes
 func New() *Router {
 	return &Router{routes: make(map[urlPattern]routeRules)}
 }
 
-func handler(w http.ResponseWriter, req *http.Request) {
+// handleHello Handles the /hello route
+func handleHello(w http.ResponseWriter, req *http.Request) {
 	err := hello().Render(req.Context(), w)
 	if err != nil {
 		return
@@ -66,7 +71,7 @@ func main() {
 	const PORT = 9000
 	fmt.Printf("Running server at... %d\n", PORT)
 	r := New()
-	r.HandleFunc(http.MethodGet, "/hello", handler)
+	r.HandleFunc(http.MethodGet, "/hello", handleHello)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", PORT), r)
 	if err != nil {
 		fmt.Println(err)

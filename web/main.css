@@ -1,0 +1,15 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+.viewport {
+    background-color: #123;
+    color: aliceblue;
+    min-height: 100vh;
+    max-height: 100vh;
+    min-width: 100vw;
+    max-width: 100vw;
+    box-sizing: border-box;
+    padding: 5rem;
+}

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="main.css">
     <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
     <script>
         // Remove all extra htmx headers, re-add content-type.
@@ -14,7 +15,6 @@
 </head>
 <body>
     <div hx-on="htmx:configRequest: event.detail.headers=''; event.detail.headers['Content-Type']='application/x-www-form-urlencoded; charset=UTF-8'" />
-    <button hx-get="http://localhost:9000/hello" hx-swap="outerHTML" hx-target="#message" hx-request='{"noHeaders": true}'>Title!</button>
-    <div id="message">(Message)</div>
+    <div class="viewport" hx-trigger="load" hx-get="http://localhost:9000/hello" hx-swap="innerHTML" hx-request='{"noHeaders": true}'></div>
 </body>
 </html>
