@@ -20,4 +20,4 @@ jobs:
           aws-region: us-west-2
       - name: Sync files to S3 bucket
         run: |
-          aws s3 sync build s3://dev.re.mind --delete
+          aws s3 sync web/index.html s3://dev.re.mind --delete
