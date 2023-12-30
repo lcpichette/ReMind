@@ -2,7 +2,9 @@
   "name": "remind",
   "version": "0.0.1",
   "scripts": {
-    "start": "open ./web/index.html;cd api;go install;./templ-main/cmd/templ/templ generate;go run *.go"
+    "start": "npm run start:server",
+    "start:server": "cd api;go install;./templ-main/cmd/templ/templ generate;go run *.go",
+    "start:local": "open ./web/index.html;cd api;go install;./templ-main/cmd/templ/templ generate;go run *.go"
   },
   "author": "Lucas Pichette",
   "license": "ISC"
