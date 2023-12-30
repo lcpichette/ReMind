@@ -9,3 +9,5 @@ api/templ-main
 .idea
 **/.idea
 
+*.swp
+**/*.swp
