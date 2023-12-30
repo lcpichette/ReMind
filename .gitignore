@@ -11,3 +11,6 @@ api/templ-main
 
 *.swp
 **/*.swp
+
+iac/.terraform
+iac/terraform.*
