@@ -1,0 +1,14 @@
+{
+  "name": "web",
+  "version": "0.0.1",
+  "description": "web project for ReMind",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Lucas Pichette",
+  "license": "ISC",
+  "dependencies": {
+    "htmx.org": "^1.9.10"
+  }
+}

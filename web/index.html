@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+    <script>
+        // Remove all extra htmx headers, re-add content-type.
+        document.body.addEventListener('htmx:configRequest', function(event) {
+            event.detail.headers = ''
+            event.detail.headers['Content-Type'] = "application/x-www-form-urlencoded; charset=UTF-8"
+        });
+    </script>
+</head>
+<body>
+    <div hx-on="htmx:configRequest: event.detail.headers=''; event.detail.headers['Content-Type']='application/x-www-form-urlencoded; charset=UTF-8'" />
+    <button hx-get="http://localhost:9000/hello" hx-swap="outerHTML" hx-target="#message" hx-request='{"noHeaders": true}'>Title!</button>
+    <div id="message">(Message)</div>
+</body>
+</html>
