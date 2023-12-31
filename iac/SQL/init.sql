@@ -1,6 +1,6 @@
--- CREATE DATABASE dev;
+CREATE DATABASE dev;
 
-USE myrdsinstance; -- db id
+USE dev;
 
 CREATE TABLE Users
 (
@@ -25,3 +25,19 @@ CREATE TABLE Messages
         REFERENCES Users(id),
     PRIMARY KEY (id)
 );
+CREATE TABLE Analytics
+(
+    id                  INT AUTO_INCREMENT UNIQUE,
+    action_value        VARCHAR(1024),
+    element_text        VARCHAR(2048),
+    element_type        VARCHAR(64),
+    event               VARCHAR(64),
+    content_grouping    VARCHAR(64),
+    created_at          DATETIME
+);
+
+INSERT INTO Users (name,username,password,created_at,last_seen) VALUES ( 'Tod', 'tod@gmail.com', 'Todster1987!', now(), now() );
+
+SELECT * FROM Users;
+
+SELECT * FROM Analytics;

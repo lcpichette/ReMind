@@ -75,7 +75,7 @@ func main() {
 	fmt.Printf("Running server at... %d\n", PORT)
 
 	// DB
-	db, err := sql.Open("mysql", "myrdsuser:myrdspassword@tcp(myrdsinstance.ct9ignv7dzxg.us-west-2.rds.amazonaws.com:3306)/myrdsinstance")
+	db, err := sql.Open("mysql", "myrdsuser:myrdspassword@tcp(myrdsinstance.ct9ignv7dzxg.us-west-2.rds.amazonaws.com:3306)/dev")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -86,14 +86,14 @@ func main() {
 		}
 	}(db)
 
-	insert, err := db.Query("INSERT INTO Users VALUES ( 'Tod', 'tod@gmail.com', 'Todster1987!', now(), now() )")
+	insert, err := db.Query("INSERT INTO Analytics (event,content_grouping,created_at) VALUES ( 'page_load', 'landing_page', now() )")
 	if err != nil {
 		panic(err.Error())
 	}
 	defer func(insert *sql.Rows) {
 		err := insert.Close()
 		if err != nil {
-
+			return
 		}
 	}(insert)
 
