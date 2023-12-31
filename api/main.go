@@ -1,7 +1,10 @@
 package main
 
+// Golang + MySQL: https://tutorialedge.net/golang/golang-mysql-tutorial/
 import (
+	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"net/http"
 	"strings"
 )
@@ -70,9 +73,34 @@ func handleHello(w http.ResponseWriter, req *http.Request) {
 func main() {
 	const PORT = 9000
 	fmt.Printf("Running server at... %d\n", PORT)
+
+	// DB
+	db, err := sql.Open("mysql", "myrdsuser:myrdspassword@tcp(myrdsinstance.ct9ignv7dzxg.us-west-2.rds.amazonaws.com:3306)/myrdsinstance")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+
+		}
+	}(db)
+
+	insert, err := db.Query("INSERT INTO Users VALUES ( 'Tod', 'tod@gmail.com', 'Todster1987!', now(), now() )")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer func(insert *sql.Rows) {
+		err := insert.Close()
+		if err != nil {
+
+		}
+	}(insert)
+
+	// Server
 	r := New()
 	r.HandleFunc(http.MethodGet, "/hello", handleHello)
-	err := http.ListenAndServe(fmt.Sprintf(":%d", PORT), r)
+	err = http.ListenAndServe(fmt.Sprintf(":%d", PORT), r)
 	if err != nil {
 		fmt.Println(err)
 	}
