@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -12,12 +13,29 @@ import (
 type httpMethod string
 type urlPattern string
 
+type MapStringScan struct {
+	// cp are the column pointers
+	cp []interface{}
+	// row contains the final result
+	row      map[string]string
+	colCount int
+	colNames []string
+}
+
 type routeRules struct {
 	methods map[httpMethod]http.Handler
 }
 
 type Router struct {
 	routes map[urlPattern]routeRules
+}
+
+var dailyMessage = "Hello, World"
+
+func fck(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // ServeHTTP Response controller
@@ -64,10 +82,41 @@ func New() *Router {
 
 // handleHello Handles the /hello route
 func handleHello(w http.ResponseWriter, req *http.Request) {
-	err := hello().Render(req.Context(), w)
-	if err != nil {
-		return
+	err := hello(dailyMessage).Render(req.Context(), w)
+	fck(err)
+}
+
+func NewMapStringScan(columnNames []string) *MapStringScan {
+	lenCN := len(columnNames)
+	s := &MapStringScan{
+		cp:       make([]interface{}, lenCN),
+		row:      make(map[string]string, lenCN),
+		colCount: lenCN,
+		colNames: columnNames,
 	}
+	for i := 0; i < lenCN; i++ {
+		s.cp[i] = new(sql.RawBytes)
+	}
+	return s
+}
+func (s *MapStringScan) Update(rows *sql.Rows) error {
+	if err := rows.Scan(s.cp...); err != nil {
+		return err
+	}
+
+	for i := 0; i < s.colCount; i++ {
+		if rb, ok := s.cp[i].(*sql.RawBytes); ok {
+			s.row[s.colNames[i]] = string(*rb)
+			*rb = nil // reset pointer to discard current value to avoid a bug
+		} else {
+			return fmt.Errorf("Cannot convert index %d column %s to type *sql.RawBytes", i, s.colNames[i])
+		}
+	}
+	return nil
+}
+
+func (s *MapStringScan) Get() map[string]string {
+	return s.row
 }
 
 func main() {
@@ -81,9 +130,7 @@ func main() {
 	}
 	defer func(db *sql.DB) {
 		err := db.Close()
-		if err != nil {
-
-		}
+		fck(err)
 	}(db)
 
 	insert, err := db.Query("INSERT INTO Analytics (event,content_grouping,created_at) VALUES ( 'page_load', 'landing_page', now() )")
@@ -92,16 +139,33 @@ func main() {
 	}
 	defer func(insert *sql.Rows) {
 		err := insert.Close()
-		if err != nil {
-			return
-		}
+		fck(err)
 	}(insert)
+
+	messages, err := db.Query("SELECT raw,created_at FROM Messages WHERE user_id = 1")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer func(messages *sql.Rows) {
+		err := messages.Close()
+		fck(err)
+	}(messages)
+	columnNames, err := messages.Columns()
+	fck(err)
+	rc := NewMapStringScan(columnNames)
+	for messages.Next() {
+		//        cv, err := rowMapString(columnNames, rows)
+		//        fck(err)
+		err := rc.Update(messages)
+		fck(err)
+		cv := rc.Get()
+		dailyMessage = cv["raw"]
+		log.Printf("%#v\n\n", cv["created_at"])
+	}
 
 	// Server
 	r := New()
 	r.HandleFunc(http.MethodGet, "/hello", handleHello)
 	err = http.ListenAndServe(fmt.Sprintf(":%d", PORT), r)
-	if err != nil {
-		fmt.Println(err)
-	}
+	fck(err)
 }

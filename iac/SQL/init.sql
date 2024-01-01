@@ -38,6 +38,10 @@ CREATE TABLE Analytics
 
 INSERT INTO Users (name,username,password,created_at,last_seen) VALUES ( 'Tod', 'tod@gmail.com', 'Todster1987!', now(), now() );
 
+INSERT INTO Messages (raw,created_at,user_id) VALUES ("Hello World!",now(),1);
+
 SELECT * FROM Users;
 
 SELECT * FROM Analytics;
+
+SELECT raw, created_at FROM Messages WHERE user_id = 1;
