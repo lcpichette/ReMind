@@ -60,7 +60,7 @@ func loginForm() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"auth\"><form hx-post=\"http://54.185.40.236:9000/auth/login\" hx-target=\"closest .auth\" hx-swap=\"innerHTML\" hx-request=\"{&#34;noHeaders&#34;: true}\"><label for=\"username\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"auth\"><form hx-post=\"//54.185.40.236:9000/auth/login\" hx-target=\"closest .auth\" hx-swap=\"innerHTML\" hx-request=\"{&#34;noHeaders&#34;: true}\"><label for=\"username\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -111,7 +111,7 @@ func unsuccessfulLogin() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><form hx-post=\"http://54.185.40.236:9000/auth/login\" hx-target=\"closest .auth\" hx-swap=\"innerHTML\" hx-request=\"{&#34;noHeaders&#34;: true}\"><label for=\"username\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><form hx-post=\"//54.185.40.236:9000/auth/login\" hx-target=\"closest .auth\" hx-swap=\"innerHTML\" hx-request=\"{&#34;noHeaders&#34;: true}\"><label for=\"username\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

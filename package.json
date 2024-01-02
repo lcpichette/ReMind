@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "start": "nohup npm run start:server &",
-    "start:server": "cd api;go install;./templ-main/cmd/templ/templ generate;go run *.go",
+    "start:server": "kill -9 $(lsof -t -i:9000);cd api;go install;./templ-main/cmd/templ/templ generate;go run *.go",
     "start:local": "open ./web/index.html;cd api;go install;./templ-main/cmd/templ/templ generate;go run *.go",
     "launch:server": ""
   },
