@@ -137,7 +137,6 @@ func (s *MapStringScan) Get() map[string]string {
 
 // handleHello Handles the /message route
 func handleMessage(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("API-KEY", "YEA THIS IS THE FLAG")
 	err := hello(dailyMessage).Render(req.Context(), w)
 	fck(err)
 }
@@ -145,16 +144,6 @@ func handleMessage(w http.ResponseWriter, req *http.Request) {
 // handleLoginForm Handles the /auth/loginForm route
 func handleLoginForm(w http.ResponseWriter, req *http.Request) {
 	err := loginForm().Render(req.Context(), w)
-	fck(err)
-}
-
-// TEMPORARY CTF FOR TRENT
-func handleDeleteAllUsers(w http.ResponseWriter, req *http.Request) {
-	err := deleteAllUsers().Render(req.Context(), w)
-	fck(err)
-}
-func handleDeleteAllUsersOptions(w http.ResponseWriter, req *http.Request) {
-	err := deleteAllUsersOptions().Render(req.Context(), w)
 	fck(err)
 }
 
@@ -260,8 +249,6 @@ func main() {
 	r.HandleFunc(http.MethodGet, "/message", handleMessage)
 	r.HandleFunc(http.MethodGet, "/auth/loginForm", handleLoginForm)
 	r.HandleFunc(http.MethodPost, "/auth/login", handleLogin)
-	r.HandleFunc(http.MethodOptions, "/deleteAllUsers", handleDeleteAllUsersOptions)
-	r.HandleFunc(http.MethodPost, "/deleteAllUsers", handleDeleteAllUsers)
 	err = http.ListenAndServe(fmt.Sprintf(":%d", PORT), r)
 	fck(err)
 }
