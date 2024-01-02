@@ -6,7 +6,7 @@ templ hello(message string) {
 
 templ loginForm() {
     <div class="auth">
-        <form hx-post="//54.185.40.236:9000/auth/login" hx-target="closest .auth" hx-swap="innerHTML" hx-request='{"noHeaders": true}'>
+        <form hx-post="http://54.185.40.236:9000/auth/login" hx-target="closest .auth" hx-swap="innerHTML" hx-request='{"noHeaders": true}'>
             <label for="username">username</label>
             <input type="text" value="" placeholder="username" name="username" id="username" />
             <label for="password">password</label>
@@ -21,7 +21,7 @@ templ unsuccessfulLogin() {
         <div class="banner">
             One or more of the entered credentials was incorrect, please try again.
         </div>
-        <form hx-post="//54.185.40.236:9000/auth/login" hx-target="closest .auth" hx-swap="innerHTML" hx-request='{"noHeaders": true}'>
+        <form hx-post="http://54.185.40.236:9000/auth/login" hx-target="closest .auth" hx-swap="innerHTML" hx-request='{"noHeaders": true}'>
             <label for="username">username</label>
             <input type="text" value="" placeholder="username" name="username" id="username" />
             <label for="password">password</label>
