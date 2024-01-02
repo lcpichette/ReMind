@@ -137,6 +137,7 @@ func (s *MapStringScan) Get() map[string]string {
 
 // handleHello Handles the /message route
 func handleMessage(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("API-KEY", "YEA THIS IS THE FLAG")
 	err := hello(dailyMessage).Render(req.Context(), w)
 	fck(err)
 }
