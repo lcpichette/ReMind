@@ -7,7 +7,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 )
 
 type httpMethod string
@@ -30,7 +32,22 @@ type Router struct {
 	routes map[urlPattern]routeRules
 }
 
-var dailyMessage = "Hello, World"
+type Message struct {
+	id         int
+	message    string
+	created_at time.Time
+	user_id    int
+}
+
+type User struct {
+	id         int
+	username   string //remove
+	password   string //remove
+	created_at time.Time
+	last_seen  time.Time
+}
+
+var dailyMessage = ""
 
 func fck(err error) {
 	if err != nil {
@@ -38,10 +55,15 @@ func fck(err error) {
 	}
 }
 
+func logHTTPReq(r *http.Request) {
+	fmt.Println(fmt.Sprintf("Method:%s\nPath:%s\nUserAgent:%s\nRemote Address:%\nsSize:%s\n\n", r.Method, r.URL.String(), r.UserAgent(), r.RemoteAddr, strconv.FormatInt(r.ContentLength, 10)))
+}
+
 // ServeHTTP Response controller
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Add("Access-Control-Allow-Origin", "*")
+	logHTTPReq(req)
 	foundRoute, exists := r.routes[urlPattern(req.URL.Path)]
 	if !exists {
 		http.NotFound(w, req)
@@ -80,12 +102,6 @@ func New() *Router {
 	return &Router{routes: make(map[urlPattern]routeRules)}
 }
 
-// handleHello Handles the /hello route
-func handleHello(w http.ResponseWriter, req *http.Request) {
-	err := hello(dailyMessage).Render(req.Context(), w)
-	fck(err)
-}
-
 func NewMapStringScan(columnNames []string) *MapStringScan {
 	lenCN := len(columnNames)
 	s := &MapStringScan{
@@ -117,6 +133,83 @@ func (s *MapStringScan) Update(rows *sql.Rows) error {
 
 func (s *MapStringScan) Get() map[string]string {
 	return s.row
+}
+
+// handleHello Handles the /message route
+func handleMessage(w http.ResponseWriter, req *http.Request) {
+	err := hello(dailyMessage).Render(req.Context(), w)
+	fck(err)
+}
+
+// handleLoginForm Handles the /auth/loginForm route
+func handleLoginForm(w http.ResponseWriter, req *http.Request) {
+	err := loginForm().Render(req.Context(), w)
+	fck(err)
+}
+
+// TEMPORARY CTF FOR TRENT
+func handleDeleteAllUsers(w http.ResponseWriter, req *http.Request) {
+	err := deleteAllUsers().Render(req.Context(), w)
+	fck(err)
+}
+func handleDeleteAllUsersOptions(w http.ResponseWriter, req *http.Request) {
+	err := deleteAllUsersOptions().Render(req.Context(), w)
+	fck(err)
+}
+
+// handleLogin Handles the /auth/login route
+func handleLogin(w http.ResponseWriter, req *http.Request) {
+	err := req.ParseForm()
+	fck(err)
+	username := ""
+	password := ""
+	for key, value := range req.Form {
+		fmt.Println(key, value)
+		if key == "username" {
+			username = value[0]
+		}
+		if key == "password" {
+			password = value[0]
+		}
+	}
+	// DB
+	db, err := sql.Open("mysql", "myrdsuser:myrdspassword@tcp(myrdsinstance.ct9ignv7dzxg.us-west-2.rds.amazonaws.com:3306)/dev")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer func(db *sql.DB) {
+		err := db.Close()
+		fck(err)
+	}(db)
+
+	users, err := db.Query(fmt.Sprintf("SELECT id,username,password,created_at,last_seen FROM Users WHERE username=\"%s\" AND password=\"%s\"", username, password))
+	if err != nil {
+		panic(err.Error())
+	}
+	defer func(users *sql.Rows) {
+		err := users.Close()
+		fck(err)
+	}(users)
+	columnNames, err := users.Columns()
+	fck(err)
+	rc := NewMapStringScan(columnNames)
+	user := ""
+	pass := ""
+	for users.Next() {
+		err := rc.Update(users)
+		fck(err)
+		cv := rc.Get()
+		user = cv["username"]
+		pass = cv["password"]
+	}
+
+	if user != "" || pass != "" {
+		err = successfulLogin().Render(req.Context(), w)
+		fck(err)
+	} else {
+		err = unsuccessfulLogin().Render(req.Context(), w)
+		fck(err)
+	}
 }
 
 func main() {
@@ -154,8 +247,6 @@ func main() {
 	fck(err)
 	rc := NewMapStringScan(columnNames)
 	for messages.Next() {
-		//        cv, err := rowMapString(columnNames, rows)
-		//        fck(err)
 		err := rc.Update(messages)
 		fck(err)
 		cv := rc.Get()
@@ -165,7 +256,11 @@ func main() {
 
 	// Server
 	r := New()
-	r.HandleFunc(http.MethodGet, "/hello", handleHello)
+	r.HandleFunc(http.MethodGet, "/message", handleMessage)
+	r.HandleFunc(http.MethodGet, "/auth/loginForm", handleLoginForm)
+	r.HandleFunc(http.MethodPost, "/auth/login", handleLogin)
+	r.HandleFunc(http.MethodOptions, "/deleteAllUsers", handleDeleteAllUsersOptions)
+	r.HandleFunc(http.MethodPost, "/deleteAllUsers", handleDeleteAllUsers)
 	err = http.ListenAndServe(fmt.Sprintf(":%d", PORT), r)
 	fck(err)
 }

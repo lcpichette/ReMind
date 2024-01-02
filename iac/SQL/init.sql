@@ -45,3 +45,5 @@ SELECT * FROM Users;
 SELECT * FROM Analytics;
 
 SELECT raw, created_at FROM Messages WHERE user_id = 1;
+
+SELECT id,username,password,created_at,last_seen FROM Users WHERE username="cole@gmail.com";
